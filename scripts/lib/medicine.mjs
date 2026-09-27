@@ -28,10 +28,14 @@ export function compareTuple(a, b) {
   return 0;
 }
 
-/** Newest link on the NMRA page whose squashed filename contains `keyword`. */
+/**
+ * Newest link on the NMRA page whose squashed (A-Z0-9) filename contains `keyword`
+ * (a string) or matches it (a RegExp).
+ */
 export function discoverLink(html, pageUrl, extPattern, keyword, score = scoreFilenameDate) {
   const re = new RegExp(`href=['"]([^'"]+\\.(?:${extPattern})(?:\\?[^'"]*)?)['"]`, "gi");
-  const want = keyword.toUpperCase().replace(/[^A-Z0-9]+/g, "");
+  const want = keyword instanceof RegExp ? keyword : keyword.toUpperCase().replace(/[^A-Z0-9]+/g, "");
+  const matches = (squashed) => (want instanceof RegExp ? want.test(squashed) : Boolean(want) && squashed.includes(want));
   const hits = [];
   for (const m of html.matchAll(re)) {
     let abs;
@@ -41,7 +45,7 @@ export function discoverLink(html, pageUrl, extPattern, keyword, score = scoreFi
       continue;
     }
     const fname = fileNameOf(abs);
-    if (want && fname.toUpperCase().replace(/[^A-Z0-9]+/g, "").includes(want)) hits.push([abs, fname]);
+    if (matches(fname.toUpperCase().replace(/[^A-Z0-9]+/g, ""))) hits.push([abs, fname]);
   }
   if (!hits.length) return null;
   hits.sort((a, b) => compareTuple(score(b[1]), score(a[1])));

@@ -12,7 +12,7 @@ type Category = "medicine" | "borderline" | "cosmetics";
 type Product = { id: string; genericName: string; brandName: string; [k: string]: string };
 type Ad = { id: string; image: string; targetUrl: string; sortOrder: number };
 type Source = { url: string; filename: string; discovered: boolean; records: number; schedule?: string };
-type Meta = { generatedAt: string; sourcePage: string; sources: Record<Category, Source[]> };
+type Meta = { generatedAt: string; sourcePages: string[]; sources: Record<Category, Source[]> };
 
 type Dataset = {
   products: Product[];
@@ -93,7 +93,8 @@ export function handleApi(route: string, q: URLSearchParams, origin: string): Ap
         lastSuccessfulRefresh: meta.generatedAt,
         currentSourceUrl: med?.url,
         currentSourceFilename: med?.filename,
-        sourcePageUrl: meta.sourcePage,
+        sourcePageUrl: meta.sourcePages[0],
+        sourcePages: meta.sourcePages,
         borderline: stats("borderline"),
         cosmetics: stats("cosmetics"),
       },

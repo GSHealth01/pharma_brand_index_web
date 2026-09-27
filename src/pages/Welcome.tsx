@@ -43,6 +43,9 @@ export default function Welcome() {
     ? [health.data.recordCount, health.data.borderline?.recordCount ?? 0, health.data.cosmetics?.recordCount ?? 0]
     : null;
   const total = counts?.reduce((a, b) => a + b, 0) ?? 0;
+  const updated = health.data?.lastSuccessfulRefresh
+    ? new Date(health.data.lastSuccessfulRefresh).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })
+    : null;
 
   return (
     <div className="welcome">
@@ -117,7 +120,7 @@ export default function Welcome() {
 
           {total > 0 && (
             <p className="welcome-stat stagger" style={{ "--i": 7 } as CSSProperties}>
-              <span className="live-dot" /> <CountUp to={total} className="stat-num" /> NMRA-registered products, refreshed daily
+              <span className="live-dot" /> <CountUp to={total} className="stat-num" /> NMRA-registered products{updated && <> · updated {updated}</>}
             </p>
           )}
 

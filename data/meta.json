@@ -1,6 +1,10 @@
 {
-  "generatedAt": "2026-09-27T17:05:17.267Z",
-  "sourcePage": "https://www.nmra.gov.lk/",
+  "generatedAt": "2026-09-27T17:44:12.635Z",
+  "sourcePages": [
+    "https://www.nmra.gov.lk/",
+    "https://www.nmra.gov.lk/pages/borderline-products",
+    "https://www.nmra.gov.lk/pages/cosmetics"
+  ],
   "sources": {
     "medicine": [
       {
@@ -13,31 +17,31 @@
     "borderline": [
       {
         "schedule": "Schedule 1",
-        "url": "https://cdn.prod.website-files.com/666d0695ca3ba7fa496a5068/6a795ccc640a614f85bb73f6_Schedule%201%20-%2010.08.26.pdf",
-        "filename": "6a795ccc640a614f85bb73f6_Schedule 1 - 10.08.26.pdf",
-        "discovered": false,
-        "records": 7
+        "url": "https://cdn.prod.website-files.com/666d0695ca3ba7fa496a5068/6aa3abc3deeba6276dbd99d9_Registered%20Borderline%20Products%20List%20-%20I%20(09.11).pdf",
+        "filename": "6aa3abc3deeba6276dbd99d9_Registered Borderline Products List - I (09.11).pdf",
+        "discovered": true,
+        "records": 17
       },
       {
         "schedule": "Schedule IIA",
-        "url": "https://cdn.prod.website-files.com/666d0695ca3ba7fa496a5068/6a795ccc3189e2190a8d8ccf_Schedule%20II%20A%20-%2010.08.26.pdf",
-        "filename": "6a795ccc3189e2190a8d8ccf_Schedule II A - 10.08.26.pdf",
-        "discovered": false,
-        "records": 10
+        "url": "https://cdn.prod.website-files.com/666d0695ca3ba7fa496a5068/6aa3abc433c867dd055e0469_Registered%20Borderline%20Products%20List%20-%20IIA%20(09.11).pdf",
+        "filename": "6aa3abc433c867dd055e0469_Registered Borderline Products List - IIA (09.11).pdf",
+        "discovered": true,
+        "records": 49
       },
       {
         "schedule": "Schedule IIB",
-        "url": "https://cdn.prod.website-files.com/666d0695ca3ba7fa496a5068/6a795cccae66580152702490_Schedule%20II%20B%20-%2010.08.26.pdf",
-        "filename": "6a795cccae66580152702490_Schedule II B - 10.08.26.pdf",
-        "discovered": false,
-        "records": 16
+        "url": "https://cdn.prod.website-files.com/666d0695ca3ba7fa496a5068/6aa7924d99359da766dcf783_Registered%20Borderline%20Products%20List%20-%20IIB%20(09.11).pdf",
+        "filename": "6aa7924d99359da766dcf783_Registered Borderline Products List - IIB (09.11).pdf",
+        "discovered": true,
+        "records": 115
       }
     ],
     "cosmetics": [
       {
         "url": "https://cdn.prod.website-files.com/666d0695ca3ba7fa496a5068/6a9a5cb14e8a2b5b9b04378c_September%20-%202026_merged.pdf",
         "filename": "6a9a5cb14e8a2b5b9b04378c_September - 2026_merged.pdf",
-        "discovered": false,
+        "discovered": true,
         "records": 7711
       }
     ]

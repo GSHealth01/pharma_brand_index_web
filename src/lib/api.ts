@@ -75,5 +75,10 @@ export const api = {
   product: (id: string) => get<Product>(`/api/products/${enc(id)}`),
   ads: () => get<{ results: Ad[] }>("/api/ads"),
   health: () =>
-    get<{ recordCount: number; borderline?: { recordCount: number }; cosmetics?: { recordCount: number } }>("/api/health"),
+    get<{
+      recordCount: number;
+      lastSuccessfulRefresh?: string;
+      borderline?: { recordCount: number };
+      cosmetics?: { recordCount: number };
+    }>("/api/health"),
 };

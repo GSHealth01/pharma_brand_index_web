@@ -34,8 +34,13 @@ nmra.gov.lk ──▶ scripts/sync-data.mjs ──▶ data/*.json ──▶ api/
   - `pdf-tables.mjs` is a port of pdfplumber's table detection onto pdf.js (edges, intersections,
     cells, rows).
   - Product IDs use the same UUIDv5 scheme, so links and favorites stay compatible.
-- Verified against the old backend: identical record counts (6,642 medicines / 33 borderline /
-  7,711 cosmetics) and byte-identical API responses on the endpoints tested.
+- Verified against the old backend: identical record counts and byte-identical API responses
+  on the endpoints tested (before the borderline fix below).
+- **Borderline fix:** the old parser only read page 1 of each borderline PDF, because the header
+  row appears only there, so it dropped every continuation page. Now all pages are parsed, and
+  the borderline lists are found on NMRA's /pages/borderline-products page ("Registered
+  Borderline Products List - I / IIA / IIB"). Current snapshot: **6,642 medicines, 181
+  borderline products (was 33), 7,711 cosmetics**.
 - **The data is a one-time snapshot for now.** Run `npm run sync-data`, commit `data/` and redeploy
   to refresh it. A daily GitHub Action can automate this later.
 - "Popular searches" ranks generics by number of registered brands. The old backend counted

@@ -3,13 +3,13 @@
 //
 //   npm run sync-data
 //
-// Same behaviour as the original FastAPI backend: finds the newest medicine Excel on
-// nmra.gov.lk (falls back to the last known URL), and the Borderline / Cosmetics PDFs
-// (falls back to the known seed URLs, since the homepage doesn't link them).
+// Finds the newest files on the NMRA pages that publish them (homepage for the medicine
+// Excel, /pages/borderline-products and /pages/cosmetics for the PDFs) and falls back to
+// the last known URLs if a page is unavailable or a file can't be matched.
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { KW_BORDERLINE, KW_COSMETICS, SEED_BORDERLINE, SEED_COSMETICS, parseBorderlinePdf, parseCosmeticsPdf, scorePdfDate } from "./lib/categories.mjs";
+import { BORDERLINE_PAGE, COSMETICS_PAGE, KW_BORDERLINE, KW_COSMETICS, SEED_BORDERLINE, SEED_COSMETICS, parseBorderlinePdf, parseCosmeticsPdf, scorePdfDate } from "./lib/categories.mjs";
 import { discoverLink, parseMedicineWorkbook } from "./lib/medicine.mjs";
 import { fileNameOf } from "./lib/normalize.mjs";
 
@@ -34,15 +34,18 @@ async function main() {
   const started = Date.now();
   await fs.mkdir(OUT, { recursive: true });
 
-  let html = "";
-  try {
-    const res = await fetch(SOURCE_PAGE, { headers: { "User-Agent": UA, Accept: "text/html" } });
-    if (!res.ok) throw new Error(`${res.status}`);
-    html = await res.text();
-    log(`Fetched source page ${SOURCE_PAGE}`);
-  } catch (e) {
-    log(`! Source page unavailable (${e.message}); using known file URLs`);
-  }
+  const fetchPage = async (url) => {
+    try {
+      const res = await fetch(url, { headers: { "User-Agent": UA, Accept: "text/html" } });
+      if (!res.ok) throw new Error(`${res.status}`);
+      log(`Fetched ${url}`);
+      return await res.text();
+    } catch (e) {
+      log(`! ${url} unavailable (${e.message}); using known file URLs`);
+      return "";
+    }
+  };
+  const [html, borderlineHtml, cosmeticsHtml] = await Promise.all([fetchPage(SOURCE_PAGE), fetchPage(BORDERLINE_PAGE), fetchPage(COSMETICS_PAGE)]);
 
   const sources = {};
   const source = (url, discovered, records) => ({ url, filename: fileNameOf(url), discovered: Boolean(discovered), records });
@@ -59,7 +62,7 @@ async function main() {
   const borderline = [];
   sources.borderline = [];
   for (const [label, seed] of Object.entries(SEED_BORDERLINE)) {
-    const found = html && discoverLink(html, SOURCE_PAGE, "pdf", KW_BORDERLINE[label], scorePdfDate);
+    const found = discoverLink(borderlineHtml + html, BORDERLINE_PAGE, "pdf", KW_BORDERLINE[label], scorePdfDate);
     const url = found || seed;
     const items = await parseBorderlinePdf(await download(url), label);
     borderline.push(...items);
@@ -70,7 +73,7 @@ async function main() {
   // Cosmetics (1 merged PDF)
   let cosFound = null;
   for (const kw of KW_COSMETICS) {
-    cosFound = html && discoverLink(html, SOURCE_PAGE, "pdf", kw, scorePdfDate);
+    cosFound = discoverLink(cosmeticsHtml + html, COSMETICS_PAGE, "pdf", kw, scorePdfDate);
     if (cosFound) break;
   }
   const cosUrl = cosFound || SEED_COSMETICS;
@@ -87,7 +90,7 @@ async function main() {
   await write("cosmetics.json", cosmetics);
   await fs.writeFile(
     path.join(OUT, "meta.json"),
-    JSON.stringify({ generatedAt: new Date().toISOString(), sourcePage: SOURCE_PAGE, sources }, null, 2),
+    JSON.stringify({ generatedAt: new Date().toISOString(), sourcePages: [SOURCE_PAGE, BORDERLINE_PAGE, COSMETICS_PAGE], sources }, null, 2),
   );
   log(`Done in ${((Date.now() - started) / 1000).toFixed(1)}s -> data/`);
 }

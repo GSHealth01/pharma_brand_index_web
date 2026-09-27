@@ -3,17 +3,35 @@ import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
 import { cleanPdf, uuid5Hex } from "./normalize.mjs";
 import { extractTables } from "./pdf-tables.mjs";
 
-// Fallback URLs used by the backend when the NMRA page doesn't link the PDFs.
-export const SEED_BORDERLINE = {
-  "Schedule 1": "https://cdn.prod.website-files.com/666d0695ca3ba7fa496a5068/6a795ccc640a614f85bb73f6_Schedule%201%20-%2010.08.26.pdf",
-  "Schedule IIA": "https://cdn.prod.website-files.com/666d0695ca3ba7fa496a5068/6a795ccc3189e2190a8d8ccf_Schedule%20II%20A%20-%2010.08.26.pdf",
-  "Schedule IIB": "https://cdn.prod.website-files.com/666d0695ca3ba7fa496a5068/6a795cccae66580152702490_Schedule%20II%20B%20-%2010.08.26.pdf",
-};
-export const SEED_COSMETICS = "https://cdn.prod.website-files.com/666d0695ca3ba7fa496a5068/6a9a5cb14e8a2b5b9b04378c_September%20-%202026_merged.pdf";
-export const KW_BORDERLINE = { "Schedule 1": "SCHEDULE1", "Schedule IIA": "SCHEDULEIIA", "Schedule IIB": "SCHEDULEIIB" };
-export const KW_COSMETICS = ["COSMETICS", "MERGED"];
+const CDN = "https://cdn.prod.website-files.com/666d0695ca3ba7fa496a5068/";
 
-/** categories.py _score_date (day-first, 2- or 4-digit year). */
+// NMRA pages that link the registry files (discovery searches all of them).
+export const BORDERLINE_PAGE = "https://www.nmra.gov.lk/pages/borderline-products";
+export const COSMETICS_PAGE = "https://www.nmra.gov.lk/pages/cosmetics";
+
+// Last known files — used only if discovery finds nothing.
+export const SEED_BORDERLINE = {
+  "Schedule 1": CDN + "6aa3abc3deeba6276dbd99d9_Registered%20Borderline%20Products%20List%20-%20I%20(09.11).pdf",
+  "Schedule IIA": CDN + "6aa3abc433c867dd055e0469_Registered%20Borderline%20Products%20List%20-%20IIA%20(09.11).pdf",
+  "Schedule IIB": CDN + "6aa7924d99359da766dcf783_Registered%20Borderline%20Products%20List%20-%20IIB%20(09.11).pdf",
+};
+export const SEED_COSMETICS = CDN + "6a9a5cb14e8a2b5b9b04378c_September%20-%202026_merged.pdf";
+
+// Matched against the squashed (A-Z0-9 only) filename. NMRA has used both
+// "Schedule II A - 10.08.26.pdf" and "Registered Borderline Products List - IIA (09.11).pdf";
+// "LISTI" must not match "LISTIIA", hence the lookaheads.
+export const KW_BORDERLINE = {
+  "Schedule 1": /BORDERLINEPRODUCTSLISTI(?!I)|SCHEDULE(?:1|I)(?![0-9I])/,
+  "Schedule IIA": /BORDERLINEPRODUCTSLISTIIA|SCHEDULEIIA/,
+  "Schedule IIB": /BORDERLINEPRODUCTSLISTIIB|SCHEDULEIIB/,
+};
+// The cosmetics page also links forms ("cosmetic_schedule_01_14.pdf", fee lists), so stay specific.
+export const KW_COSMETICS = [/MERGED/, /REGISTEREDCOSMETIC/];
+
+/**
+ * Rank candidate files: newest date in the filename (day-first, 2- or 4-digit year, as in
+ * categories.py), then the CDN upload time encoded in the asset-id prefix, then the name.
+ */
 export function scorePdfDate(fname) {
   let best = null;
   for (const m of fname.matchAll(/(\d{1,2})[.\-_/](\d{1,2})[.\-_/](\d{2,4})/g)) {
@@ -24,7 +42,8 @@ export function scorePdfDate(fname) {
       if (!best || c[0] > best[0] || (c[0] === best[0] && (c[1] > best[1] || (c[1] === best[1] && c[2] > best[2])))) best = c;
     }
   }
-  return [...(best ?? [0, 0, 0]), fname.toLowerCase()];
+  const uploaded = /^([0-9a-f]{8})[0-9a-f]{16}_/.exec(fname);
+  return [...(best ?? [0, 0, 0]), uploaded ? parseInt(uploaded[1], 16) : 0, fname.toLowerCase()];
 }
 
 async function eachTable(buf, fn) {
@@ -43,6 +62,11 @@ async function eachTable(buf, fn) {
 
 export async function parseBorderlinePdf(buf, schedule) {
   const products = [];
+  // The header row ("No | Product Name | Brand Name | ...") only appears on page 1.
+  // The original backend skipped every table without it, silently dropping all
+  // continuation pages (33 of 158 products). Once the header has been seen, later
+  // 13-column tables are treated as continuations of the same list.
+  let headerSeen = false;
   await eachTable(buf, (table) => {
     let headerIdx = -1;
     for (let i = 0; i < Math.min(6, table.length); i++) {
@@ -52,13 +76,15 @@ export async function parseBorderlinePdf(buf, schedule) {
         break;
       }
     }
-    if (headerIdx < 0) return;
+    if (headerIdx < 0 && !headerSeen) return;
+    headerSeen = true;
     for (const row of table.slice(headerIdx + 1)) {
       const c = row.map(cleanPdf);
       if (c.length < 13) continue;
       const [productName, brandName] = [c[1], c[2]];
       if (!productName && !brandName) continue;
       if (["product name", "no"].includes(productName.toLowerCase())) continue;
+      if (/^column\b/i.test(productName)) continue; // "COLUMN I | COLUMN II ..." banner row
       const regNo = c[11] || c[12];
       products.push({
         id: "bp_" + uuid5Hex(`${schedule}|${productName}|${brandName}|${regNo}`).slice(0, 20),
