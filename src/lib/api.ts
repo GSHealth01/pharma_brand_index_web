@@ -1,9 +1,6 @@
-// Same FastAPI backend the mobile app uses — configured via VITE_API_BASE_URL in .env.
+// Empty VITE_API_BASE_URL = this site's own /api (api/handler.ts, data synced from NMRA).
+// Set it to use another backend with the same endpoints.
 const BASE = ((import.meta.env.VITE_API_BASE_URL as string | undefined) ?? "").trim().replace(/\/$/, "");
-
-if (!BASE) {
-  console.error("VITE_API_BASE_URL is not set. Copy .env.example to .env and set the backend URL.");
-}
 
 export type Category = "medicine" | "borderline" | "cosmetics";
 

@@ -1,0 +1,11 @@
+[
+  { "id": "ad-1", "image": "/ads/ad-1.jpg", "targetUrl": "", "sortOrder": 1 },
+  { "id": "ad-5", "image": "/ads/ad-5.jpg", "targetUrl": "", "sortOrder": 5 },
+  { "id": "ad-7", "image": "/ads/ad-7.jpg", "targetUrl": "", "sortOrder": 7 },
+  { "id": "ad-8", "image": "/ads/ad-8.jpg", "targetUrl": "", "sortOrder": 8 },
+  { "id": "ad-10", "image": "/ads/ad-10.jpg", "targetUrl": "", "sortOrder": 10 },
+  { "id": "ad-14", "image": "/ads/ad-14.jpg", "targetUrl": "", "sortOrder": 14 },
+  { "id": "ad-15", "image": "/ads/ad-15.jpg", "targetUrl": "", "sortOrder": 15 },
+  { "id": "ad-16", "image": "/ads/ad-16.jpg", "targetUrl": "", "sortOrder": 16 },
+  { "id": "ad-17", "image": "/ads/ad-17.jpg", "targetUrl": "", "sortOrder": 17 }
+]

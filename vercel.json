@@ -1,1 +1,10 @@
-{ "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }] }
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "api/handler.ts": { "includeFiles": "data/**", "memory": 1024, "maxDuration": 10 }
+  },
+  "rewrites": [
+    { "source": "/api/:route*", "destination": "/api/handler?__route=:route*" },
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ]
+}

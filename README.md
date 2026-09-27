@@ -1,8 +1,11 @@
 # Pharma Brand Index – Sri Lanka (Website)
 
 Responsive website version of the Pharma Brand Index mobile app (`../pharma_brand_index`).
-It uses the **same FastAPI backend and API**, the same content and wording, and the same brand
-colours and gradient. The layout is built for both phones and desktop browsers.
+It has the same content and wording, the same brand colours and gradient, and a layout built for
+both phones and desktop browsers.
+
+**Data comes straight from the NMRA sources.** It doesn't use the Emergent-hosted backend.
+The project has its own API with the same endpoints, so the mobile app can use it too.
 
 ## Stack
 React 19 + TypeScript + Vite 6 + React Router 7. Icons are Material Design Icons (the same set as
@@ -11,26 +14,46 @@ the app). The font is Plus Jakarta Sans.
 ## Run locally
 ```bash
 npm install
-npm run dev        # http://localhost:5173
+npm run dev        # http://localhost:5173 (website + /api together)
 npm run build      # outputs static files to dist/
-npm run preview    # serve the production build locally
+npm run sync-data  # re-download and re-parse the NMRA registries into data/
 ```
+
+## Data pipeline
+```
+nmra.gov.lk ──▶ scripts/sync-data.mjs ──▶ data/*.json ──▶ api/handler.ts ──▶ website / mobile app
+ (xls + pdfs)     (discover, download,     (committed)      (/api/* on Vercel,
+                   parse, normalize)                         Vite middleware in dev)
+```
+- `scripts/sync-data.mjs` finds the newest "MEDICINE VALID REGISTRATIONS" Excel on nmra.gov.lk.
+  It also downloads the Borderline (3 schedule PDFs) and Cosmetics PDFs. The homepage doesn't link
+  those, so it falls back to their known URLs, exactly as the old backend did.
+- `scripts/lib/` ports the backend's Python parsers to Node:
+  - `medicine.mjs` handles the Excel file (SheetJS), including the generic-name and strength
+    extraction and the de-duplication.
+  - `pdf-tables.mjs` is a port of pdfplumber's table detection onto pdf.js (edges, intersections,
+    cells, rows).
+  - Product IDs use the same UUIDv5 scheme, so links and favorites stay compatible.
+- Verified against the old backend: identical record counts (6,642 medicines / 33 borderline /
+  7,711 cosmetics) and byte-identical API responses on the endpoints tested.
+- **The data is a one-time snapshot for now.** Run `npm run sync-data`, commit `data/` and redeploy
+  to refresh it. A daily GitHub Action can automate this later.
+- "Popular searches" ranks generics by number of registered brands. The old backend counted
+  users' searches in MongoDB, which this setup doesn't have.
 
 ## Configuration
-The backend URL is **not** hard-coded. It's read from `VITE_API_BASE_URL` at build time.
-Copy `.env.example` to `.env` and set it:
-```
-VITE_API_BASE_URL=https://your-backend.example.com
-```
-`.env` is git-ignored. On Netlify or Vercel, set the same variable in the project's environment settings.
-Restart `npm run dev` after changing it, because Vite reads env files only at startup.
+`VITE_API_BASE_URL` (in `.env`, see `.env.example`) is **empty by default**, which means the site
+uses its own `/api`. Set it only to point the site at a different backend with the same endpoints.
 
-## Deploy
-`dist/` is a static single-page app, so any static host works: Netlify, Vercel, Cloudflare Pages,
-S3 + CloudFront or cPanel. SPA fallback rules are included:
-- `public/_redirects` for Netlify and Cloudflare Pages
-- `vercel.json` for Vercel
-- For Apache or cPanel, add an `.htaccess` that rewrites every unknown path to `/index.html`.
+## Deploy (Vercel)
+Use the **Vite** preset with the defaults. `vercel.json` already:
+- routes `/api/*` to the `api/handler.ts` function and bundles `data/**` with it
+- sends every other path to `index.html`, so page links work when opened directly
+
+No environment variables are needed. The API sends `Access-Control-Allow-Origin: *`, so the
+mobile app can use it by setting `EXPO_PUBLIC_BACKEND_URL=https://<your-site>.vercel.app`.
+(The app's login, favorites and recent-search endpoints aren't included. Those features are
+switched off in the public build anyway.)
 
 ## Pages (mapped to the app screens)
 | Route | App screen |

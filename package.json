@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "sync-data": "node scripts/sync-data.mjs"
   },
   "dependencies": {
     "@mdi/js": "^7.4.47",
@@ -22,7 +23,9 @@
     "@types/react-dom": "^19.2.7",
     "@vitejs/plugin-react": "^4.7.0",
     "oxlint": "^1.81.0",
+    "pdfjs-dist": "^6.3.289",
     "typescript": "~6.0.2",
-    "vite": "^6.4.3"
+    "vite": "^6.4.3",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   }
 }

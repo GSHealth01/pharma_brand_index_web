@@ -1,0 +1,45 @@
+{
+  "generatedAt": "2026-09-27T17:05:17.267Z",
+  "sourcePage": "https://www.nmra.gov.lk/",
+  "sources": {
+    "medicine": [
+      {
+        "url": "https://cdn.prod.website-files.com/666d0695ca3ba7fa496a5068/6ab50d00ae4335f04765cb67_MEDICINE%20VALID%20REGISTRATIONS%2024.09.2026.xls",
+        "filename": "6ab50d00ae4335f04765cb67_MEDICINE VALID REGISTRATIONS 24.09.2026.xls",
+        "discovered": true,
+        "records": 6642
+      }
+    ],
+    "borderline": [
+      {
+        "schedule": "Schedule 1",
+        "url": "https://cdn.prod.website-files.com/666d0695ca3ba7fa496a5068/6a795ccc640a614f85bb73f6_Schedule%201%20-%2010.08.26.pdf",
+        "filename": "6a795ccc640a614f85bb73f6_Schedule 1 - 10.08.26.pdf",
+        "discovered": false,
+        "records": 7
+      },
+      {
+        "schedule": "Schedule IIA",
+        "url": "https://cdn.prod.website-files.com/666d0695ca3ba7fa496a5068/6a795ccc3189e2190a8d8ccf_Schedule%20II%20A%20-%2010.08.26.pdf",
+        "filename": "6a795ccc3189e2190a8d8ccf_Schedule II A - 10.08.26.pdf",
+        "discovered": false,
+        "records": 10
+      },
+      {
+        "schedule": "Schedule IIB",
+        "url": "https://cdn.prod.website-files.com/666d0695ca3ba7fa496a5068/6a795cccae66580152702490_Schedule%20II%20B%20-%2010.08.26.pdf",
+        "filename": "6a795cccae66580152702490_Schedule II B - 10.08.26.pdf",
+        "discovered": false,
+        "records": 16
+      }
+    ],
+    "cosmetics": [
+      {
+        "url": "https://cdn.prod.website-files.com/666d0695ca3ba7fa496a5068/6a9a5cb14e8a2b5b9b04378c_September%20-%202026_merged.pdf",
+        "filename": "6a9a5cb14e8a2b5b9b04378c_September - 2026_merged.pdf",
+        "discovered": false,
+        "records": 7711
+      }
+    ]
+  }
+}

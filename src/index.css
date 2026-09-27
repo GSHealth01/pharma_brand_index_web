@@ -44,7 +44,7 @@ body {
   color: var(--ink);
   background: var(--surface-2);
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 h1, h2, h3, p { margin: 0; }
@@ -191,7 +191,7 @@ section.card .row-list { margin: 0 -16px -16px; border-top: 1px solid var(--divi
 /* ==========================================================================
    Layout: top nav, bottom nav, footer
    ========================================================================== */
-.app-shell { min-height: 100vh; display: flex; flex-direction: column; }
+.app-shell { min-height: 100vh; display: flex; flex-direction: column; overflow-x: clip; }
 .main { flex: 1; padding-bottom: calc(var(--bottom-h) + env(safe-area-inset-bottom)); }
 
 .topnav {
@@ -237,7 +237,7 @@ section.card .row-list { margin: 0 -16px -16px; border-top: 1px solid var(--divi
 /* ==========================================================================
    Welcome
    ========================================================================== */
-.welcome { min-height: 100vh; display: flex; flex-direction: column; background: #fff; position: relative; overflow: hidden; }
+.welcome { min-height: 100vh; display: flex; flex-direction: column; background: #fff; position: relative; overflow: clip; }
 .welcome-bg { position: absolute; inset: 0; pointer-events: none; }
 .blob { position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.35; }
 .b1 { width: 320px; height: 320px; background: #ffd3e6; top: -80px; left: -100px; }
