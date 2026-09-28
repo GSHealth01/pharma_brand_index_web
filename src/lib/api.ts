@@ -1,6 +1,8 @@
-// Empty VITE_API_BASE_URL = this site's own /api (api/handler.ts, data synced from NMRA).
-// Set it to use another backend with the same endpoints.
-const BASE = ((import.meta.env.VITE_API_BASE_URL as string | undefined) ?? "").trim().replace(/\/$/, "");
+// By default the site calls its own /api (api/handler.ts, data synced from NMRA).
+// VITE_EXTERNAL_API_URL points it at another backend with the same endpoints instead.
+// The old VITE_API_BASE_URL is deliberately ignored: a leftover value in hosting settings
+// kept deployments pointing at the retired Emergent backend.
+const BASE = ((import.meta.env.VITE_EXTERNAL_API_URL as string | undefined) ?? "").trim().replace(/\/$/, "");
 
 export type Category = "medicine" | "borderline" | "cosmetics";
 

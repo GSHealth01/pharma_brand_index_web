@@ -47,8 +47,9 @@ nmra.gov.lk ──▶ scripts/sync-data.mjs ──▶ data/*.json ──▶ api/
   users' searches in MongoDB, which this setup doesn't have.
 
 ## Configuration
-`VITE_API_BASE_URL` (in `.env`, see `.env.example`) is **empty by default**, which means the site
-uses its own `/api`. Set it only to point the site at a different backend with the same endpoints.
+No configuration is needed: the site uses its own `/api`. The optional `VITE_EXTERNAL_API_URL`
+(see `.env.example`) points it at a different backend with the same endpoints instead.
+The old `VITE_API_BASE_URL` is ignored. If it's still set in Vercel, delete it.
 
 ## Deploy (Vercel)
 Use the **Vite** preset with the defaults. `vercel.json` already:
